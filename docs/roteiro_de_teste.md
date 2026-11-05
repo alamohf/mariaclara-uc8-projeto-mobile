@@ -11,31 +11,31 @@ Legenda do resultado: **aprovado** (o observado é o esperado), **falha** (não 
 
 - Aparelho: Redmi Note 14
 - Sistema do aparelho: HyperOS 3.0.305.0
-- Forma de execução (Expo Go ou APK): Expo Go, ligado ao computador por cabo USB, até 29/10/2026; APK gerado pelo EAS (build de 03/11/2026), instalado no celular, a partir de 03/11/2026
+- Forma de execução (Expo Go ou APK): Expo Go, ligado ao computador por cabo USB, até 29/10/2026 e nas execuções de 05/11/2026 (C05 e repetição do C09); APK gerado pelo EAS (build de 03/11/2026), instalado no celular, nas demais execuções de 03/11/2026
 - Versão do aplicativo: 1.0.0
-- Casos sem rede: Wi-Fi e dados móveis do celular desligados (o cabo USB mantém a ligação com o Expo, mas não dá rede ao aplicativo)
+- Casos sem rede: modo avião no celular, com Wi-Fi e dados móveis desligados (no Expo Go, o cabo USB mantém a ligação com o Expo, mas não dá rede ao aplicativo)
 
 ## Casos
 
 | # | Caso | Passos | Esperado | Resultado | Onde e quando | Correção |
 |---|---|---|---|---|---|---|
 | C01 | Carga com rede | Abrir o aplicativo com internet | Aba Início com o resumo (produtos cadastrados, ativos, aguardando sincronização); aba Produtos com a lista da nuvem, sem aviso de offline | corrigido | Redmi Note 14, 03/11/2026 | Itens 1 e 9 do registro |
-| C02 | Navegação em pilha | Produtos; "Ver detalhes" em um produto; voltar | Tela de detalhes com nome, código, preço, categoria, situação e estoque atual; ao voltar, a lista | não executado | - | - |
-| C03 | Cadastro válido com rede | Cadastro; nome `Produto teste`, código `7891000100103`, preço `10,50` e categoria `1`; Adicionar | Alerta `Cadastro realizado`; o produto aparece na lista e na tabela `produtos` do Supabase | não executado | - | - |
-| C04 | Cadastro inválido | Cadastro; deixar o nome em branco ou o preço `abc`; Adicionar | Mensagem `Preencha todos os campos do produto.` ou `Informe um preço válido.` na tela; os campos continuam preenchidos | não executado | - | - |
-| C05 | Cadastro recusado pela nuvem | Trocar uma letra da chave publicável no `.env.local`; reiniciar com `npx expo start -c`; cadastrar um produto válido (código `7891000100103`) | Mensagem `Acesso negado pelo servidor. Verifique a chave e as permissões do projeto.` na tela de cadastro; linha `[cadastro de produto] api: ErroDaApi 401` no terminal; os campos continuam preenchidos. Depois, restaurar a chave | não executado | - | - |
-| C06 | Registrar entrada com rede | Movimentações; escolher um produto; tipo Entrada; quantidade `10`; Registrar | Alerta `Movimentação registrada`; item no topo do histórico, com a hora igual à do relógio do celular; estoque atual do produto aumenta 10; linha nova na tabela `movimentacoes` | falha | Redmi Note 14, 29/10/2026 | Itens 3 e 8 do registro; falta repetir depois do item 8 para marcar `corrigido` |
-| C07 | Saída maior que o estoque | Movimentações; escolher um produto; tipo Saída; quantidade maior que o estoque atual | Mensagem `Estoque insuficiente. Saldo atual: N unidades.`; nada é gravado | não executado | - | - |
-| C08 | Carga sem rede, com cache | Abrir com rede uma vez; ligar o modo avião; recarregar a lista de produtos | Lista do aparelho; aviso `Sem conexão com a internet` acima dela | não executado | - | - |
-| C09 | Carga sem rede, sem cache | Instalação nova (ou Sobre, `Apagar dados do aparelho`); modo avião; abrir Produtos | Tela de erro com `Sem conexão com o servidor. Verifique a rede e tente de novo.` e botão `Tentar novamente` | não executado | - | - |
-| C10 | Cadastro sem rede | Modo avião; cadastrar um produto válido (código `7891000100103`) | Alerta `Produto salvo no aparelho`; o produto aparece na lista; Início mostra `Aguardando sincronização: 1` | não executado | - | - |
-| C11 | Movimentação sem rede | Modo avião; registrar uma entrada | Alerta `Movimentação salva no aparelho`; o item aparece no histórico com `Aguardando sincronização` | não executado | - | - |
-| C12 | Sincronização | Desligar o modo avião; esperar alguns segundos | As marcas `Aguardando sincronização` somem; os dois registros estão no Supabase, cada um uma vez só | não executado | - | - |
-| C13 | Dados sobrevivem ao fechamento | Cadastrar sem rede; fechar o aplicativo por completo; abrir de novo (com o APK instalado) | O produto continua na lista e a fila continua com 1 pendência | não executado | - | - |
-| C14 | Contagem na tela Sobre | Aba Sobre depois de uma carga com rede | `Produtos guardados: N` e `Movimentações guardadas: M` iguais às listas; `Aguardando envio ao Supabase: 0` | não executado | - | - |
-| C15 | Apagar dados do aparelho | Sobre; `Apagar dados do aparelho`; Apagar | Contagens de produtos e movimentações vão a 0 (ou ao que estava pendente); com rede, as listas voltam a carregar da nuvem | não executado | - | - |
-| C16 | Chave da nuvem não apaga | No SQL Editor: `select has_table_privilege('anon', 'public.produtos', 'DELETE');` | `false` | não executado | - | - |
-| C17 | Código de barras inválido | Cadastro; nome `Produto teste`, preço `10,50` e categoria `1`; código `12`; Adicionar | Mensagem `O código de barras deve ter só números, de 8 a 14 dígitos.` na tela; nada é salvo; os campos continuam preenchidos | não executado | - | - |
+| C02 | Navegação em pilha | Produtos; "Ver detalhes" em um produto; voltar | Tela de detalhes com nome, código, preço, categoria, situação e estoque atual; ao voltar, a lista | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C03 | Cadastro válido com rede | Cadastro; nome `Produto teste`, código `7891000100103`, preço `10,50` e categoria `1`; Adicionar produto | Alerta `Cadastro realizado`; o produto aparece na lista e na tabela `produtos` do Supabase | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C04 | Cadastro inválido | (a) Cadastro; nome preenchido, código em branco; Adicionar produto. (b) Tudo preenchido, preço `0`; Adicionar produto. (c) Tocar no campo Nome e sair dele sem escrever | (a) Mensagem `Preencha todos os campos do produto.`; (b) mensagem `Informe um preço válido.`; (c) `O nome do produto é obrigatório.` sob o campo e o botão desabilitado. Nos três, os campos continuam preenchidos | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C05 | Cadastro recusado pela nuvem | Trocar uma letra da chave publicável no `.env.local`; reiniciar com `npx expo start -c`; cadastrar um produto válido (código `7891000100103`) | Mensagem `Acesso negado pelo servidor. Verifique a chave e as permissões do projeto.` na tela de cadastro; linha `[cadastro de produto] api: ErroDaApi 401` no terminal; os campos continuam preenchidos. Depois, restaurar a chave | aprovado | Redmi Note 14, 05/11/2026 (Expo Go) | - |
+| C06 | Registrar entrada com rede | Movimentações; escolher um produto; tipo Entrada; quantidade `10`; Registrar | Alerta `Movimentação registrada`; item no topo do histórico, com a hora igual à do relógio do celular; estoque atual do produto aumenta 10; linha nova na tabela `movimentacoes` | corrigido | Redmi Note 14, 29/10/2026 (falha) e 03/11/2026 (repetição) | Itens 3 e 8 do registro |
+| C07 | Saída maior que o estoque | Movimentações; escolher um produto; tipo Saída; quantidade `9999` | Mensagem `Estoque insuficiente. Saldo atual: N unidades.`; nada é gravado | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C08 | Carga sem rede, com cache | Abrir com rede uma vez; ligar o modo avião; recarregar a lista de produtos | Lista do aparelho; aviso `Sem conexão com a internet. Os dados locais serão exibidos, se disponíveis.` acima dela | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C09 | Carga sem rede, sem cache | Sobre, `Apagar dados do aparelho`; modo avião; Produtos, Recarregar; depois desligar o modo avião, ligar o Wi-Fi e tocar em `Tentar novamente` | Tela de erro com `Sem conexão com o servidor. Verifique a rede e tente de novo.` e o botão `Tentar novamente`, com o texto visível; com a rede de volta, o botão recarrega a lista | corrigido | Redmi Note 14, 03/11/2026 (falha) e 05/11/2026 (repetição, Expo Go) | Itens 10 e 11 do registro |
+| C10 | Cadastro sem rede | Modo avião; cadastrar um produto válido (nome `Produto offline`, código `7891000100110`) | Alerta `Produto salvo no aparelho`; o produto aparece na lista; Início mostra `Aguardando sincronização: 1` | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C11 | Movimentação sem rede | Modo avião; registrar uma entrada | Alerta `Movimentação salva no aparelho`; o item aparece no histórico com `Aguardando sincronização` | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C12 | Sincronização | Desligar o modo avião e ligar o Wi-Fi; esperar cerca de 30 segundos | As marcas `Aguardando sincronização` somem; os dois registros estão no Supabase, cada um uma vez só | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C13 | Dados sobrevivem ao fechamento | Com registros pendentes sem rede, fechar o aplicativo por completo; abrir de novo, ainda sem rede (com o APK instalado) | O produto continua na lista e a fila continua com as mesmas pendências de antes de fechar | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C14 | Contagem na tela Sobre | Aba Sobre depois de uma carga com rede | `Produtos guardados: N` e `Movimentações guardadas: M` iguais às listas; `Aguardando envio ao Supabase: 0` | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C15 | Apagar dados do aparelho | Sobre; `Apagar dados do aparelho`; Apagar | Contagens de produtos e movimentações vão a 0 (ou ao que estava pendente); com rede, as listas voltam a carregar da nuvem | aprovado | Redmi Note 14, 03/11/2026 | - |
+| C16 | Chave da nuvem não apaga | No SQL Editor: `select has_table_privilege('anon', 'public.produtos', 'DELETE');` | `false` | aprovado | Supabase (SQL Editor), 03/11/2026 | - |
+| C17 | Código de barras inválido | Cadastro; nome `Produto teste`, preço `10,50` e categoria `1`; código `12`; Adicionar produto | Mensagem `O código de barras deve ter só números, de 8 a 14 dígitos.` na tela; nada é salvo; os campos continuam preenchidos | corrigido | Redmi Note 14, 03/11/2026 | Item 5 do registro |
 
 ## Registro das correções
 
@@ -55,13 +55,14 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Observado (no código):** a tela de cadastro capturava o erro e não o repassava ao formulário, que então limpava os campos como se tivesse dado certo.
 - **Correção:** a tela de cadastro deixou de capturar o erro; ele sobe para o formulário, que mostra a mensagem e mantém os campos.
 - **Data:** 26/10/2026 | **Commit:** ccb8111 (Contexto, formulários e telas registram e mostram erros classificados)
+- **Repetição:** em 05/11/2026, no C05, a chave recusada mostrou a mensagem na tela e os campos continuaram preenchidos.
 
 ### 3. Movimentações recusadas pelo Supabase (C06)
 - **Origem:** observado no aparelho em 29/10/2026, ao registrar uma entrada: a tela mostrou a mensagem de acesso negado e o terminal, `[movimentação] api: ErroDaApi 401`, com o código `42501` e `new row violates row-level security policy` (tabela `movimentacoes`).
 - **Causa:** a tabela `movimentacoes` do projeto no Supabase estava sem as permissões (`grant`) e sem a política de inclusão `to anon`; sem política, o RLS recusa a linha.
 - **Correção:** executado no SQL Editor do Supabase o script com `grant select, insert`, as políticas de leitura e de inclusão `to anon`, a permissão na sequência e o `revoke update, delete` do `anon`. O mesmo conteúdo está versionado em `supabase/esquema.sql`.
 - **Data:** 29/10/2026 | **Commit:** 596ec2d (Esquema do Supabase, roteiro de teste e README) registra o script no repositório; a execução no Supabase não gera commit.
-- **Repetição:** em 29/10/2026, depois do script, o alerta `Movimentação registrada` apareceu. O caso só passa a `corrigido` depois de conferir também a hora (item 8).
+- **Repetição:** em 29/10/2026, depois do script, o alerta `Movimentação registrada` apareceu. Em 03/11/2026, no APK, o C06 foi repetido com a hora conferida (item 8) e passou.
 
 ### 4. Erro de transação no cache do SQLite (C01, C08, C14)
 - **Origem:** log do Expo no celular.
@@ -69,14 +70,14 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Causa:** as listas de produtos e de movimentações gravam o cache ao mesmo tempo na mesma conexão do SQLite, e as duas transações se atropelam.
 - **Correção:** as operações do banco local passaram a entrar numa fila, uma de cada vez (`noBanco` em `src/banco/bancoLocal.ts`).
 - **Data:** 27/10/2026 | **Commit:** 110143d (feat: atualização do banco de dados local)
-- **Para marcar `corrigido`:** repetir C01 e C14 e conferir que as linhas de erro não aparecem mais no terminal.
+- **Repetição:** em 05/11/2026, no Expo Go, a abertura com internet e a carga das duas listas não registraram no terminal nenhuma linha de erro de transação; o C14 passou em 03/11/2026.
 
 ### 5. Código de barras aceitava qualquer valor (C17, C03)
 - **Origem:** observado no uso do aplicativo: um código de apenas dois números foi aceito.
 - **Causa:** só se exigia que o campo não estivesse vazio.
 - **Correção:** validação em `validarDadosNovoProduto`: só números, de 8 a 14 dígitos (`src/servicos/produto.ts`). Vale para cadastros novos, online e offline.
 - **Data:** 27/10/2026 | **Commit:** 0019ef8 (feat: aprimora servico de produtos)
-- **Para marcar `corrigido`:** executar C17 e conferir que `12` é recusado e `7891000100103` é aceito.
+- **Repetição:** em 03/11/2026, o código `12` foi recusado com a mensagem esperada (C17) e o código `7891000100103` foi aceito (C03).
 
 ### 6. Nomes de arquivo com maiúscula diferente do import (conferência final)
 - **Origem:** `npx tsc --noEmit`, erro `TS1261` (casing).
@@ -94,7 +95,7 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Causa:** a coluna `data` estava como `timestamp without time zone`. O aplicativo envia a hora em UTC, o banco guardava e devolvia sem fuso, e o aplicativo a lia como hora local.
 - **Correção:** a coluna passou para `timestamptz` no Supabase, igual ao `supabase/esquema.sql`.
 - **Data:** 29/10/2026 | **Commit:** não se aplica (alteração feita direto no banco do Supabase)
-- **Para marcar `corrigido`:** registrar uma nova movimentação e conferir que a hora do histórico é a mesma do relógio do celular.
+- **Repetição:** em 03/11/2026, no APK, a hora da movimentação do C06 ficou igual à do relógio do celular.
 
 ### 9. APK sem dados: variáveis do Supabase fora do build (C01)
 - **Origem:** observado no aparelho em 03/11/2026, com o primeiro APK instalado: as telas Início, Produtos e Movimentações mostravam `Algo deu errado. Tente de novo.`, sem listas nem resumo, com o celular no Wi-Fi.
@@ -103,6 +104,27 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Data:** 03/11/2026 | **Commit:** bac5a52 (fix: build preview le as variaveis do ambiente preview)
 - **Repetição:** em 03/11/2026, com o novo APK instalado, o aplicativo carregou sem erro.
 
+### 10. Botão "Tentar novamente" sem texto na tela Produtos (C09)
+- **Origem:** observado no aparelho em 03/11/2026, no APK: abaixo da mensagem de erro aparecia uma barra azul fina, sem texto.
+- **Causa:** na tela Produtos o botão ficava dentro de um bloco em coluna, e o botão, feito para esticar na horizontal, encolhia. Na tela Movimentações, onde o bloco é uma linha, ele aparecia normal.
+- **Correção:** `flexDirection: "row"` no estilo `botaoTentarNovamente` de `src/telas/TelaProdutos.tsx`.
+- **Data:** 05/11/2026 | **Commit:** dec18c4
+- **Repetição:** em 05/11/2026, no Expo Go, o botão apareceu com o texto `Tentar novamente`.
+
+### 11. Falha de rede sem lista guardada aparecia como erro genérico (C09)
+- **Origem:** observado no aparelho em 03/11/2026, no APK, no C09: a tela mostrava `Algo deu errado. Tente de novo.` no lugar de `Sem conexão com o servidor. Verifique a rede e tente de novo.`
+- **Causa:** o aplicativo só reconhecia falha de rede quando o erro chegava como `TypeError: Network request failed`. No Redmi Note 14 a falha chega como `Error: fetch failed: java.net.UnknownHostException: Unable to resolve host ...`, que era classificada como erro desconhecido.
+- **Correção:** `ErroDeRede` e `comoErroDeRede` em `src/erros/erros.ts`. As leituras (`carregarProdutos`, `carregarProdutoPorId` e `carregarMovimentacoes`) passaram a tratar qualquer falha do próprio `fetch` como falha de rede, porque o `fetch` só rejeita quando nenhuma resposta chega do servidor.
+- **Data:** 05/11/2026 | **Commit:** dec18c4
+- **Repetição:** em 05/11/2026, no Expo Go, a tela mostrou a mensagem de rede e o terminal, `[lista de produtos] rede: ErroDeRede: Error: fetch failed: java.net.UnknownHostException ...`; com a rede de volta, `Tentar novamente` recarregou a lista.
+
+### 12. Abas sem ícone (todas as telas)
+- **Origem:** observado no aparelho em 03/11/2026: as cinco abas mostravam um quadrado vazio, o ícone provisório do React Navigation, porque as abas só tinham título.
+- **Correção:** ícones Ionicons (`@expo/vector-icons`) em cada aba, definidos em `App.tsx`; a aba ativa usa a cor primária do tema.
+- **Data:** 05/11/2026 | **Commit:** a2254f4
+- **Repetição:** em 05/11/2026, no Expo Go, as cinco abas mostraram o ícone.
+
 ### Ambiente (não são casos do roteiro)
 - **Web:** o aplicativo é para celular. Na Web o `expo-sqlite` não funciona (`Unable to resolve "./wa-sqlite/wa-sqlite.wasm"`), e o teste deve ser feito no Expo Go.
 - **Conexão do Expo Go:** o erro `Failed to download remote update` no celular era a ligação com o computador. Resolvido com o cabo USB: `adb reverse tcp:8081 tcp:8081`, variável `REACT_NATIVE_PACKAGER_HOSTNAME=127.0.0.1` e URL `exp://127.0.0.1:8081` no Expo Go. Observado em 27/10/2026.
+- **Aviso de `SafeAreaView`:** no Expo Go aparece um aviso amarelo, `SafeAreaView has been deprecated`. É do modo de desenvolvimento, não aparece no APK e não afeta o funcionamento. A troca por `react-native-safe-area-context` fica como melhoria futura.
