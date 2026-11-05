@@ -65,6 +65,7 @@ Ficam de fora do aplicativo mobile o gerenciamento completo de categorias, a alt
 - `expo-sqlite` (banco local)
 - Supabase (banco na nuvem, acessado pela API de dados com `fetch`)
 - `expo-network` — biblioteca fora da lista do enunciado. Justificativa: detecta quando o aparelho fica sem internet e quando a conexão volta, para exibir o aviso offline e disparar a sincronização da fila. Funciona no Expo Go.
+- EAS Build — gera o APK para Android na nuvem (veja "Geração do APK").
 
 ## Configuração
 
@@ -82,8 +83,8 @@ npm install
 
 Para quem for executar este aplicativo, os dados do projeto são:
 
-- URL do projeto: `https://SEU-PROJETO.supabase.co`
-- Chave publicável: `sb_publishable_SUA-CHAVE-PUBLICAVEL`
+- URL do projeto: `https://dfkhptjzwyvjyrntzqfo.supabase.co`
+- Chave publicável: `sb_publishable_ccFZXpTkNUDTvADib3c9jg_JBMy_saC`
 
 A chave publicável é pública por desenho: o que ela pode fazer é limitado pelas políticas de RLS. A chave secreta e a senha do banco nunca saem do painel do Supabase.
 
@@ -93,8 +94,8 @@ A chave publicável é pública por desenho: o que ela pode fazer é limitado pe
 2. Preencha os valores, com os nomes exatos abaixo:
 
 ```
-EXPO_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co
-EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_SUA-CHAVE-PUBLICAVEL
+EXPO_PUBLIC_SUPABASE_URL=https://dfkhptjzwyvjyrntzqfo.supabase.co
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_ccFZXpTkNUDTvADib3c9jg_JBMy_saC
 ```
 
 O arquivo `.env.example` traz os nomes das variáveis, sem valores. O `.env.local` não vai para o repositório. Depois de alterar o `.env.local`, reinicie o Expo com `npx expo start -c`.
@@ -102,7 +103,7 @@ O arquivo `.env.example` traz os nomes das variáveis, sem valores. O `.env.loca
 ### Configuração do Supabase
 
 1. Crie um projeto no [Supabase](https://supabase.com/dashboard).
-2. No SQL Editor, cole e execute o arquivo `supabase/esquema.sql`. Ele cria a tabela `produtos` (colunas `id`, `nome`, `codigo_barras`, `preco_venda`, `id_categoria` e `ativo`) e a tabela `movimentacoes` (colunas `id`, `id_produto`, `quantidade`, `tipo` e `data`), liga o RLS nas duas e cria as políticas de leitura e de inclusão para o papel `anon`.
+2. No SQL Editor, cole e execute o arquivo `supabase/esquema.sql`. Ele cria a tabela `produtos` (colunas `id`, `nome`, `codigo_barras`, `preco_venda`, `id_categoria` e `ativo`) e a tabela `movimentacoes` (colunas `id`, `id_produto`, `quantidade`, `tipo` e `data`, esta como `timestamptz`, com fuso horário), liga o RLS nas duas e cria as políticas de leitura e de inclusão para o papel `anon`.
 3. O mesmo script tira do papel `anon` a permissão de alterar e de apagar: a chave publicável só lê e inclui. Para conferir: `select has_table_privilege('anon', 'public.produtos', 'DELETE');` deve retornar `false`.
 4. Copie a URL do projeto e a chave publicável para o `.env.local`.
 
@@ -163,13 +164,20 @@ A chave publicável só lê e inclui: o papel `anon` não tem permissão de alte
 
 ## Geração do APK
 
-O projeto usa o EAS Build para gerar um APK para Android, com o perfil `preview` do arquivo `eas.json`:
+O APK é gerado na nuvem pelo EAS Build, com o perfil `preview` do arquivo `eas.json`, que usa `"buildType": "apk"` e lê as variáveis do ambiente `preview` (`"environment": "preview"`). O identificador do aplicativo no Android é `com.mariaclara.estok`, definido em `android.package` no `app.json`.
+
+O `.env.local` não vai para o build. As duas variáveis do Supabase ficam cadastradas no painel da Expo (https://expo.dev), no ambiente `preview`: `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Só a chave publicável é usada.
+
+Para gerar o APK, na pasta do projeto:
 
 ```bash
-npx eas-cli build -p android --profile preview
+npx eas-cli@latest login
+npx eas-cli@latest build -p android --profile preview
 ```
 
-Link do build: SERÁ PREENCHIDO NO MARCO 4.
+Link do build: https://expo.dev/accounts/maria-clara.22/projects/uc8-projeto-mobile/builds/676ae776-8d57-4dc8-824c-4f03446be5be
+
+Para instalar, abra o link no celular Android, baixe o APK e permita a instalação de aplicativos de fontes desconhecidas quando o Android pedir. O aplicativo instalado não precisa do Expo Go nem do computador.
 
 ## Testes
 

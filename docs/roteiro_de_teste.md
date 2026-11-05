@@ -9,9 +9,9 @@ Legenda do resultado: **aprovado** (o observado é o esperado), **falha** (não 
 
 ## Ambiente
 
-- Aparelho:
-- Versão do Android:
-- Forma de execução (Expo Go ou APK):
+- Aparelho: Redmi Note 14
+- Sistema do aparelho: HyperOS 3.0.305.0
+- Forma de execução (Expo Go ou APK): Expo Go, ligado ao computador por cabo USB, até 29/10/2026; APK gerado pelo EAS (build de 03/11/2026), instalado no celular, a partir de 03/11/2026
 - Versão do aplicativo: 1.0.0
 - Casos sem rede: Wi-Fi e dados móveis do celular desligados (o cabo USB mantém a ligação com o Expo, mas não dá rede ao aplicativo)
 
@@ -19,12 +19,12 @@ Legenda do resultado: **aprovado** (o observado é o esperado), **falha** (não 
 
 | # | Caso | Passos | Esperado | Resultado | Onde e quando | Correção |
 |---|---|---|---|---|---|---|
-| C01 | Carga com rede | Abrir o aplicativo com internet | Aba Início com o resumo (produtos cadastrados, ativos, aguardando sincronização); aba Produtos com a lista da nuvem, sem aviso de offline | não executado | - | - |
+| C01 | Carga com rede | Abrir o aplicativo com internet | Aba Início com o resumo (produtos cadastrados, ativos, aguardando sincronização); aba Produtos com a lista da nuvem, sem aviso de offline | corrigido | Redmi Note 14, 03/11/2026 | Itens 1 e 9 do registro |
 | C02 | Navegação em pilha | Produtos; "Ver detalhes" em um produto; voltar | Tela de detalhes com nome, código, preço, categoria, situação e estoque atual; ao voltar, a lista | não executado | - | - |
 | C03 | Cadastro válido com rede | Cadastro; nome `Produto teste`, código `7891000100103`, preço `10,50` e categoria `1`; Adicionar | Alerta `Cadastro realizado`; o produto aparece na lista e na tabela `produtos` do Supabase | não executado | - | - |
 | C04 | Cadastro inválido | Cadastro; deixar o nome em branco ou o preço `abc`; Adicionar | Mensagem `Preencha todos os campos do produto.` ou `Informe um preço válido.` na tela; os campos continuam preenchidos | não executado | - | - |
 | C05 | Cadastro recusado pela nuvem | Trocar uma letra da chave publicável no `.env.local`; reiniciar com `npx expo start -c`; cadastrar um produto válido (código `7891000100103`) | Mensagem `Acesso negado pelo servidor. Verifique a chave e as permissões do projeto.` na tela de cadastro; linha `[cadastro de produto] api: ErroDaApi 401` no terminal; os campos continuam preenchidos. Depois, restaurar a chave | não executado | - | - |
-| C06 | Registrar entrada com rede | Movimentações; escolher um produto; tipo Entrada; quantidade `10`; Registrar | Alerta `Movimentação registrada`; item no topo do histórico; estoque atual do produto aumenta 10; linha nova na tabela `movimentacoes` | não executado | - | - |
+| C06 | Registrar entrada com rede | Movimentações; escolher um produto; tipo Entrada; quantidade `10`; Registrar | Alerta `Movimentação registrada`; item no topo do histórico, com a hora igual à do relógio do celular; estoque atual do produto aumenta 10; linha nova na tabela `movimentacoes` | falha | Redmi Note 14, 29/10/2026 | Itens 3 e 8 do registro; falta repetir depois do item 8 para marcar `corrigido` |
 | C07 | Saída maior que o estoque | Movimentações; escolher um produto; tipo Saída; quantidade maior que o estoque atual | Mensagem `Estoque insuficiente. Saldo atual: N unidades.`; nada é gravado | não executado | - | - |
 | C08 | Carga sem rede, com cache | Abrir com rede uma vez; ligar o modo avião; recarregar a lista de produtos | Lista do aparelho; aviso `Sem conexão com a internet` acima dela | não executado | - | - |
 | C09 | Carga sem rede, sem cache | Instalação nova (ou Sobre, `Apagar dados do aparelho`); modo avião; abrir Produtos | Tela de erro com `Sem conexão com o servidor. Verifique a rede e tente de novo.` e botão `Tentar novamente` | não executado | - | - |
@@ -56,11 +56,12 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Correção:** a tela de cadastro deixou de capturar o erro; ele sobe para o formulário, que mostra a mensagem e mantém os campos.
 - **Data:** 26/10/2026 | **Commit:** ccb8111 (Contexto, formulários e telas registram e mostram erros classificados)
 
-### 3. Movimentações sem permissão no Supabase (C06)
-- **Origem:** revisão do script SQL das movimentações.
-- **Observado (no script):** a tabela `movimentacoes` não tinha as permissões (`grant`) nem as políticas `to anon`, então a leitura e o registro seriam recusados pela chave publicável.
-- **Correção:** políticas de leitura e inclusão `to anon`, `grant select, insert` e permissão nas sequências; versionado em `supabase/esquema.sql`.
-- **Data:** 26/10/2026 | **Commit:** 596ec2d (Esquema do Supabase, roteiro de teste e README)
+### 3. Movimentações recusadas pelo Supabase (C06)
+- **Origem:** observado no aparelho em 29/10/2026, ao registrar uma entrada: a tela mostrou a mensagem de acesso negado e o terminal, `[movimentação] api: ErroDaApi 401`, com o código `42501` e `new row violates row-level security policy` (tabela `movimentacoes`).
+- **Causa:** a tabela `movimentacoes` do projeto no Supabase estava sem as permissões (`grant`) e sem a política de inclusão `to anon`; sem política, o RLS recusa a linha.
+- **Correção:** executado no SQL Editor do Supabase o script com `grant select, insert`, as políticas de leitura e de inclusão `to anon`, a permissão na sequência e o `revoke update, delete` do `anon`. O mesmo conteúdo está versionado em `supabase/esquema.sql`.
+- **Data:** 29/10/2026 | **Commit:** 596ec2d (Esquema do Supabase, roteiro de teste e README) registra o script no repositório; a execução no Supabase não gera commit.
+- **Repetição:** em 29/10/2026, depois do script, o alerta `Movimentação registrada` apareceu. O caso só passa a `corrigido` depois de conferir também a hora (item 8).
 
 ### 4. Erro de transação no cache do SQLite (C01, C08, C14)
 - **Origem:** log do Expo no celular.
@@ -87,6 +88,20 @@ no aparelho; "Origem" diz como o problema foi encontrado.
 - **Origem:** `npx tsc --noEmit`, 15 erros vindos de `api/`.
 - **Correção:** pasta removida do projeto e `tsconfig.json` com `exclude` para `api` e `node_modules`.
 - **Data:** não registrada | **Commit:** não registrado (pasta removida do projeto)
+
+### 8. Hora da movimentação 3 horas adiantada (C06)
+- **Origem:** observado no aparelho em 29/10/2026: uma movimentação registrada às 19:16 apareceu no histórico como 22:16:26.
+- **Causa:** a coluna `data` estava como `timestamp without time zone`. O aplicativo envia a hora em UTC, o banco guardava e devolvia sem fuso, e o aplicativo a lia como hora local.
+- **Correção:** a coluna passou para `timestamptz` no Supabase, igual ao `supabase/esquema.sql`.
+- **Data:** 29/10/2026 | **Commit:** não se aplica (alteração feita direto no banco do Supabase)
+- **Para marcar `corrigido`:** registrar uma nova movimentação e conferir que a hora do histórico é a mesma do relógio do celular.
+
+### 9. APK sem dados: variáveis do Supabase fora do build (C01)
+- **Origem:** observado no aparelho em 03/11/2026, com o primeiro APK instalado: as telas Início, Produtos e Movimentações mostravam `Algo deu errado. Tente de novo.`, sem listas nem resumo, com o celular no Wi-Fi.
+- **Causa:** as variáveis do Supabase não estavam no EAS quando o APK foi gerado. O `.env.local` não vai para o build, então o aplicativo ficou sem a URL e sem a chave.
+- **Correção:** criadas no EAS, no ambiente `preview`, as variáveis `EXPO_PUBLIC_SUPABASE_URL` e `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; o perfil `preview` do `eas.json` passou a ter `"environment": "preview"`; novo build. O log do build listou as duas variáveis como carregadas do ambiente `preview`.
+- **Data:** 03/11/2026 | **Commit:** bac5a52 (fix: build preview le as variaveis do ambiente preview)
+- **Repetição:** em 03/11/2026, com o novo APK instalado, o aplicativo carregou sem erro.
 
 ### Ambiente (não são casos do roteiro)
 - **Web:** o aplicativo é para celular. Na Web o `expo-sqlite` não funciona (`Unable to resolve "./wa-sqlite/wa-sqlite.wasm"`), e o teste deve ser feito no Expo Go.
