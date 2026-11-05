@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,8 +15,22 @@ import { TelaSobre } from "./src/telas/TelaSobre";
 
 import { ProvedorEstadoApp } from "./src/contexto/EstadoAppContext";
 
+import { cores } from "./src/tema/tema";
+
 const Pilha = createNativeStackNavigator<RotasDaPilha>();
 const Abas = createBottomTabNavigator<RotasDasAbas>();
+
+type NomeDoIcone = ComponentProps<typeof Ionicons>["name"];
+
+// Um ícone para cada aba. A cor e o tamanho vêm da própria barra de abas, que
+// destaca a aba ativa.
+const ICONES_DAS_ABAS: Record<keyof RotasDasAbas, NomeDoIcone> = {
+  AbaInicio: "home-outline",
+  AbaProdutos: "pricetags-outline",
+  AbaCadastro: "add-circle-outline",
+  AbaMovimentacoes: "swap-vertical-outline",
+  AbaSobre: "information-circle-outline",
+};
 
 function PilhaProdutos() {
   return (
@@ -36,7 +52,18 @@ function PilhaProdutos() {
 
 function NavegacaoPrincipal() {
   return (
-    <Abas.Navigator>
+    <Abas.Navigator
+      screenOptions={({ route }) => ({
+        tabBarActiveTintColor: cores.primaria,
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons
+            name={ICONES_DAS_ABAS[route.name]}
+            size={size}
+            color={color}
+          />
+        ),
+      })}
+    >
       <Abas.Screen name="AbaInicio" options={{ title: "Início" }}>
         {({ navigation }) => (
           <TelaInicio

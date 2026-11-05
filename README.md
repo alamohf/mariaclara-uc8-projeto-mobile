@@ -66,6 +66,7 @@ Ficam de fora do aplicativo mobile o gerenciamento completo de categorias, a alt
 - Supabase (banco na nuvem, acessado pela API de dados com `fetch`)
 - `expo-network` — biblioteca fora da lista do enunciado. Justificativa: detecta quando o aparelho fica sem internet e quando a conexão volta, para exibir o aviso offline e disparar a sincronização da fila. Funciona no Expo Go.
 - EAS Build — gera o APK para Android na nuvem (veja "Geração do APK").
+- `@expo/vector-icons` — biblioteca fora da lista do enunciado. Justificativa: fornece os ícones (Ionicons) das abas de navegação, no lugar do ícone provisório do React Navigation. Funciona no Expo Go.
 
 ## Configuração
 
