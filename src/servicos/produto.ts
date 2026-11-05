@@ -15,7 +15,12 @@ import {
   removerDaFila,
 } from "../banco/filaSincronizacao";
 
-import { ErroDaApi, ErroDeValidacao, registrarErro } from "../erros/erros";
+import {
+  ErroDaApi,
+  ErroDeValidacao,
+  comoErroDeRede,
+  registrarErro,
+} from "../erros/erros";
 
 const URL_SUPABASE = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const CHAVE_SUPABASE = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -198,7 +203,7 @@ export async function carregarProdutos(): Promise<Produto[]> {
       headers,
     });
   } catch (erro: unknown) {
-    return carregarProdutosLocaisOffline(erro);
+     return carregarProdutosLocaisOffline(comoErroDeRede(erro));
   }
 
   if (resposta.status >= 500) {
@@ -254,7 +259,7 @@ export async function carregarProdutoPorId(id: number): Promise<Produto> {
       headers,
     });
   } catch (erro: unknown) {
-    return produtoLocalOuErro(id, erro);
+      return produtoLocalOuErro(id, comoErroDeRede(erro));
   }
 
   if (resposta.status >= 500) {

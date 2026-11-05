@@ -156,7 +156,8 @@ const styles = StyleSheet.create({
     marginBottom: espacos.md,
   },
 
-  botaoTentarNovamente: {
+    botaoTentarNovamente: {
+    flexDirection: "row",
     marginTop: espacos.md,
     width: "100%",
   },

@@ -40,6 +40,29 @@ export class ErroDaApi extends Error {
   }
 }
 
+// O servidor não respondeu: sem internet, sem rota até o servidor ou tempo esgotado.
+export class ErroDeRede extends Error {
+  constructor(mensagem: string) {
+    super(mensagem);
+    this.name = "ErroDeRede";
+  }
+}
+
+// O fetch só rejeita quando não chega nenhuma resposta do servidor. Por isso uma
+// falha do próprio fetch é sempre falha de rede, qualquer que seja o formato do
+// erro que o aparelho devolva. O texto original fica no detalhe do registro.
+export function comoErroDeRede(erro: unknown): ErroDeRede {
+  if (erro instanceof ErroDeRede) {
+    return erro;
+  }
+
+  if (erro instanceof Error) {
+    return new ErroDeRede(`${erro.name}: ${erro.message}`);
+  }
+
+  return new ErroDeRede(String(erro));
+}
+
 function mensagemParaStatus(status: number): string {
   if (status === 400) {
     return "O servidor recusou os dados enviados. Confira os campos.";
@@ -59,6 +82,9 @@ function mensagemParaStatus(status: number): string {
 
   return `O servidor recusou a operação (${status}).`;
 }
+
+const MENSAGEM_DE_REDE =
+  "Sem conexão com o servidor. Verifique a rede e tente de novo.";
 
 export function classificarErro(erro: unknown): ErroClassificado {
   if (erro instanceof ErroDeValidacao) {
@@ -85,10 +111,22 @@ export function classificarErro(erro: unknown): ErroClassificado {
     };
   }
 
-  if (erro instanceof TypeError && erro.message === "Network request failed") {
+  if (erro instanceof ErroDeRede) {
     return {
       tipo: "rede",
-      mensagem: "Sem conexão com o servidor. Verifique a rede e tente de novo.",
+      mensagem: MENSAGEM_DE_REDE,
+      detalhe: `${erro.name}: ${erro.message}`,
+    };
+  }
+
+  // AbortError: a leitura passou do tempo limite (ver buscarComLimite).
+  if (
+    (erro instanceof TypeError && erro.message === "Network request failed") ||
+    (erro instanceof Error && erro.name === "AbortError")
+  ) {
+    return {
+      tipo: "rede",
+      mensagem: MENSAGEM_DE_REDE,
       detalhe: `${erro.name}: ${erro.message}`,
     };
   }

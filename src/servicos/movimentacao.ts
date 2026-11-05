@@ -15,7 +15,12 @@ import {
   salvarMovimentacoesLocais,
 } from "../banco/movimentacoesLocal";
 
-import { ErroDaApi, ErroDeValidacao, registrarErro } from "../erros/erros";
+import {
+  ErroDaApi,
+  ErroDeValidacao,
+  comoErroDeRede,
+  registrarErro,
+} from "../erros/erros";
 
 const URL_SUPABASE = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
@@ -165,7 +170,7 @@ export async function carregarMovimentacoes(): Promise<Movimentacao[]> {
       },
     );
   } catch (erro: unknown) {
-    return carregarMovimentacoesLocaisOuFalhar(erro);
+        return carregarMovimentacoesLocaisOuFalhar(comoErroDeRede(erro));
   }
 
   if (!resposta.ok) {
